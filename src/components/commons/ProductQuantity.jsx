@@ -6,8 +6,13 @@ import { VALID_COUNT_REGEX } from "components/constants";
 import useSelectedQuantity from "hooks/useSelectedQuantity";
 
 import TooltipWrapper from "./TooltipWrapper";
+import { useShowProduct } from "hooks/reactQuery/useProductsApi";
 
-const ProductQuantity = ({ slug, availableQuantity }) => {
+const ProductQuantity = ({ slug }) => {
+
+  const { data: product = {} } = useShowProduct(slug);
+  const { availableQuantity } = product;
+
   const { selectedQuantity, setSelectedQuantity } = useSelectedQuantity(slug);
 
   const parsedSelectedQuantity = parseInt(selectedQuantity) || 0;

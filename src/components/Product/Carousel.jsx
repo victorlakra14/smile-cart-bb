@@ -4,8 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { Left, Right } from "@bigbinary/neeto-icons";
 import { Button } from "@bigbinary/neetoui";
 import classNames from "classnames";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
+import { useShowProduct } from "hooks/reactQuery/useProductsApi";
 
-const Carousel = ({ imageUrls, title }) => {
+const Carousel = () => {
+  const { slug } =  useParams();
+
+  const {data: {imageUrl, imageUrls: partialImageUrls, title} = {} } = useShowProduct(slug);
+
+  const imageUrls = append(imageUrl, partialImageUrls);
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const timerRef = useRef(null);

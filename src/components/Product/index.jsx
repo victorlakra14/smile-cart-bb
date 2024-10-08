@@ -12,30 +12,33 @@ import { useParams } from "react-router-dom";
 import routes from "routes";
 
 import Carousel from "./Carousel";
+import { useShowProduct } from "hooks/reactQuery/useProductsApi";
 
 const Product = () => {
   const { slug } = useParams();
 
+  const {data: product = {}, isLoading, isError} = useShowProduct(slug);
+
   const { selectedQuantity, setSelectedQuantity } = useSelectedQuantity(slug);
 
-  const [product, setProduct] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  // const [product, setProduct] = useState({});
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [isError, setIsError] = useState(false);
 
-  const fetchProduct = async () => {
-    try {
-      const product = await productsApi.show(slug);
-      setProduct(product);
-    } catch {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const fetchProduct = async () => {
+  //   try {
+  //     const product = await productsApi.show(slug);
+  //     setProduct(product);
+  //   } catch {
+  //     setIsError(true);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchProduct();
-  }, []);
+  // useEffect(() => {
+  //   fetchProduct();
+  // }, []);
 
   const {
     name,
@@ -60,10 +63,7 @@ const Product = () => {
         <div className="w-2/5">
           <div className="flex justify-center gap-16">
             {isNotNil(imageUrls) ? (
-              <Carousel
-                imageUrls={append(imageUrl, imageUrls)}
-                title="Infinix Inbook"
-              />
+              <Carousel />
             ) : (
               <img alt={name} className="w-48" src={imageUrl} />
             )}
