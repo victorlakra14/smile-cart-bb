@@ -1,47 +1,55 @@
 /* eslint-disable prettier/prettier */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
+import { filterNonNull } from "@bigbinary/neeto-cist";
 import { Search } from "@bigbinary/neeto-icons";
 import { Input, NoData, Pagination } from "@bigbinary/neetoui";
-import productsApi from "apis/products";
 import { Header, PageLoader } from "components/commons";
-import useDebounce from "hooks/useDebounce";
-import { isEmpty } from "ramda";
-
-import ProductListItem from "./ProductListItem";
 import { useFetchProducts } from "hooks/reactQuery/useProductsApi";
+import useFuncDebounce from "hooks/useFuncDebounce";
+import useQueryParams from "hooks/useQueryParams";
+import { isEmpty, mergeLeft } from "ramda";
+import { useHistory } from "react-router-dom";
+import routes from "routes";
+import { buildUrl } from "utils/url";
+
 import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE } from "./constants";
+import ProductListItem from "./ProductListItem";
 
 const Home = () => {
-  // const [products, setProducts] = useState([]);
-  // const [isLoading, setIsLoading] = useState(true);
-  const [searchKey, setSearchKey] = useState("");
-  const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE_INDEX);
+  const history = useHistory();
 
-  const debouncedSearchKey = useDebounce(searchKey);
+  const queryParams = useQueryParams();
+  const { page, pageSize, searchTerm = "" } = queryParams;
+
+  const [searchKey, setSearchKey] = useState(searchTerm);
+
+  const updateQueryParams = useFuncDebounce(value => {
+    const params = {
+      page: DEFAULT_PAGE_INDEX,
+      pageSize: DEFAULT_PAGE_SIZE,
+      searchTerm: value || null,
+    };
+
+    history.replace(buildUrl(routes.products.index, filterNonNull(params)));
+  });
 
   const productsParams = {
-    searchTerm: debouncedSearchKey,
-    page: currentPage,
-    pageSize: DEFAULT_PAGE_SIZE,
+    searchTerm,
+    page: Number(page) || DEFAULT_PAGE_INDEX,
+    pageSize: Number(pageSize) || DEFAULT_PAGE_SIZE,
   };
 
-  const {data: { products = [], totalProductsCount } = {}, isLoading} = useFetchProducts(productsParams)
+  const { data: { products = [], totalProductsCount } = {}, isLoading } =
+    useFetchProducts(productsParams);
 
-  // const fetchProducts = async () => {
-  //   try {
-  //     const data = await productsApi.fetch({ searchTerm: debouncedSearchKey });
-  //     setProducts(data.products);
-  //   } catch (error) {
-  //     console.log("An error occurred:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, [debouncedSearchKey]);
+  const handlePageNavigation = page =>
+    history.replace(
+      buildUrl(
+        routes.products.index,
+        mergeLeft({ page, pageSize: DEFAULT_PAGE_SIZE }, queryParams)
+      )
+    );
 
   if (isLoading) return <PageLoader />;
 
@@ -57,9 +65,9 @@ const Home = () => {
               prefix={<Search />}
               type="search"
               value={searchKey}
-              onChange={event => {
-                setSearchKey(event.target.value);
-                setCurrentPage(DEFAULT_PAGE_INDEX);
+              onChange={({ target: { value } }) => {
+                updateQueryParams(value);
+                setSearchKey(value);
               }}
             />
           }
@@ -76,10 +84,10 @@ const Home = () => {
       )}
       <div>
         <Pagination
-          navigate={page => setCurrentPage(page)}
           count={totalProductsCount}
-          pageNo={currentPage || DEFAULT_PAGE_INDEX}
-          pageSize={DEFAULT_PAGE_SIZE}
+          navigate={handlePageNavigation}
+          pageNo={Number(page) || DEFAULT_PAGE_INDEX}
+          pageSize={Number(pageSize) || DEFAULT_PAGE_SIZE}
         />
       </div>
     </div>
