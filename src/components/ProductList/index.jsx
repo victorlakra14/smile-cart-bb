@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 import { Search } from "@bigbinary/neeto-icons";
-import { Input, NoData } from "@bigbinary/neetoui";
+import { Input, NoData, Pagination } from "@bigbinary/neetoui";
 import productsApi from "apis/products";
 import { Header, PageLoader } from "components/commons";
 import useDebounce from "hooks/useDebounce";
@@ -10,17 +10,23 @@ import { isEmpty } from "ramda";
 
 import ProductListItem from "./ProductListItem";
 import { useFetchProducts } from "hooks/reactQuery/useProductsApi";
+import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE } from "./constants";
 
 const Home = () => {
   // const [products, setProducts] = useState([]);
   // const [isLoading, setIsLoading] = useState(true);
   const [searchKey, setSearchKey] = useState("");
+  const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE_INDEX);
 
   const debouncedSearchKey = useDebounce(searchKey);
 
-  const {data: { products = [] } = {}, isLoading} = useFetchProducts({
+  const productsParams = {
     searchTerm: debouncedSearchKey,
-  })
+    page: currentPage,
+    pageSize: DEFAULT_PAGE_SIZE,
+  };
+
+  const {data: { products = [], totalProductsCount } = {}, isLoading} = useFetchProducts(productsParams)
 
   // const fetchProducts = async () => {
   //   try {
@@ -51,7 +57,10 @@ const Home = () => {
               prefix={<Search />}
               type="search"
               value={searchKey}
-              onChange={event => setSearchKey(event.target.value)}
+              onChange={event => {
+                setSearchKey(event.target.value);
+                setCurrentPage(DEFAULT_PAGE_INDEX);
+              }}
             />
           }
         />
@@ -65,6 +74,14 @@ const Home = () => {
           ))}
         </div>
       )}
+      <div>
+        <Pagination
+          navigate={page => setCurrentPage(page)}
+          count={totalProductsCount}
+          pageNo={currentPage || DEFAULT_PAGE_INDEX}
+          pageSize={DEFAULT_PAGE_SIZE}
+        />
+      </div>
     </div>
   );
 };
