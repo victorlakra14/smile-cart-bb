@@ -17,6 +17,7 @@ const useCartItemsStore = create(
           return { cartItems: assoc(slug, String(quantity), cartItems) };
         }),
       removeCartItems: slug => set(evolve({ cartItems: dissoc(slug) })),
+      clearCart: () => set({ cartItems: {} }),
     }),
     { name: "cart-items-store" }
   )
