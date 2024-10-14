@@ -1,16 +1,18 @@
 /* eslint-disable prettier/prettier */
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 import { Left, Right } from "@bigbinary/neeto-icons";
 import { Button } from "@bigbinary/neetoui";
 import classNames from "classnames";
-import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 import { useShowProduct } from "hooks/reactQuery/useProductsApi";
+import { append } from "ramda";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 const Carousel = () => {
-  const { slug } =  useParams();
+  const { slug } = useParams();
 
-  const {data: {imageUrl, imageUrls: partialImageUrls, title} = {} } = useShowProduct(slug);
+  const { data: { imageUrl, imageUrls: partialImageUrls, title } = {} } =
+    useShowProduct(slug);
 
   const imageUrls = append(imageUrl, partialImageUrls);
 
@@ -82,4 +84,4 @@ const Carousel = () => {
     </div>
   );
 };
-export default Carousel;
+export default memo(Carousel);

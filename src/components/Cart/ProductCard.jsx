@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { useState } from "react";
+import { memo, useState } from "react";
 
 import { Delete } from "@bigbinary/neeto-icons";
 import { Alert, Typography } from "@bigbinary/neetoui";
@@ -56,4 +56,4 @@ const ProductCard = ({
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

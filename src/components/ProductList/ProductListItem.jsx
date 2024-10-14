@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+import { memo } from "react";
 
 import { Typography } from "@bigbinary/neetoui";
 import AddToCart from "components/commons/AddToCart";
@@ -26,4 +27,4 @@ const ProductListItem = ({
   </Link>
 );
 
-export default ProductListItem;
+export default memo(ProductListItem);

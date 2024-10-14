@@ -1,4 +1,6 @@
 /* eslint-disable prettier/prettier */
+import { memo } from "react";
+
 import { Button, Typography } from "@bigbinary/neetoui";
 import classNames from "classnames";
 import { gt, keys } from "ramda";
@@ -60,4 +62,4 @@ const PriceCard = ({ totalMrp, totalOfferPrice }) => {
   );
 };
 
-export default PriceCard;
+export default memo(PriceCard);
